@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>GifTastic</title>
+</head>
+<style>
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: lightskyblue;
+}
+
+form{
+    background-color: lightgray;
+    border: 3px whitesmoke solid;
+    padding: 5px;
+    margin: 5px;
+    width: 15%;
+    float: right; 
+}
+.container{
+    width: 90%;
+    float: left;
+
+}
+
+</style>
+
+<body>
+    <div class="container">
+        <div id="buttons-view"></div><br>
+   
+        <form id="sport-form">
+            <label for="sport-input">Add a sport</label>
+            <input type="text" style="text-transform: lowercase" id="sport-input">
+            <br>
+            <input id="add-sport" type="submit">
+        </form>
+
+        <div id="gifs-appear-here"></div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript">
+
+            var sports = ["football", "basketball", "baseball", "soccer", "tennis", "cricket"];
+
+        function displaySportInfo(){
+
+            $("#gifs-appear-here").empty();
+
+            $(".sport-btn").on("click", function() {
+                
+    
+            var sport = $(this).attr("data-sport");
+            var queryURL = "http://api.giphy.com/v1/gifs/search?q=" +
+                sport + "&api_key=DCx84EIOAP9TFI5XhkrdwMNK0MmfzBPo&limit=10";
+
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            }).then(function(response) {
+
+                var results = response.data;
+
+                for (var i = 0; i < results.length; i++) {
+
+                    var sportDiv = $("<div>");
+                    var p = $("<p>");
+
+                    p.text("Rating: " + results[i].rating);
+
+                    sportImage = $("<img>");
+
+                    sportImage.attr("src", results[i].images.fixed_height.url);
+
+                    sportDiv.append(p);
+
+                    sportDiv.append(sportImage);
+
+                    $("#gifs-appear-here").append(sportDiv);
+                    
+                }
+
+            });
+        });
+    };
+
+            function renderButtons() {
+
+                $("#buttons-view").empty();
+
+                
+                for (var i = 0; i < sports.length; i++) {
+
+                var a = $("<button>");
+                
+                a.addClass("sport-btn");
+                
+                a.attr("data-sport", sports[i]);
+                
+                a.text((sports[i]).toLowerCase());
+                
+                $("#buttons-view").append(a);
+                }
+            }
+
+                $("#add-sport").on("click", function(event) {
+                    event.preventDefault();
+
+                    var sport = $("#sport-input").val().trim();
+
+                    if ((sport != "") && (sports.indexOf(sport) === -1)){
+
+                        sports.push(sport);
+
+                        renderButtons();    
+                    }
+                });
+
+                $(document).on("click", ".sport-btn", displaySportInfo);
+
+                renderButtons();
+  </script>
+  </div>
+</body>
+
+</html>
